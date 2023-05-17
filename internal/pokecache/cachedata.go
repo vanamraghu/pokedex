@@ -1,6 +1,7 @@
 package pokecache
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -30,11 +31,11 @@ func (c *Cache) Get(key string) ([]byte, bool) {
 	c.Mux.Lock()
 	defer c.Mux.Unlock()
 	value, ok := c.CacheData[key]
-	//if ok {
-	//	fmt.Printf("%s\n", value.val)
-	//} else {
-	//	fmt.Println("Has to request from api")
-	//}
+	if ok {
+		fmt.Println("Reading from cache data")
+	} else {
+		fmt.Println("Request from api")
+	}
 	return value.val, ok
 }
 

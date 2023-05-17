@@ -23,6 +23,11 @@ type locationDetails struct {
 	Url          string `json:"url"`
 }
 
+type Config struct {
+	nextLocationURL *string
+	prevLocationURL *string
+}
+
 var responseData *LocationStructure
 
 //var c = pokecache.NewCache(5 * time.Second)
@@ -31,8 +36,22 @@ var c = pokecache.Cache{
 	Mux:       &sync.Mutex{},
 	CacheData: make(map[string]pokecache.CacheEntry),
 }
+var baseURL = "https://pokeapi.co/api/v2"
 
-func getLocationData(url string) (LocationStructure, error) {
+func GetLocationData(pageUrl *string) (LocationStructure, error) {
+	url := baseURL + "/location-area"
+	if pageUrl != nil {
+		url = *pageUrl
+	}
+	val, ok := c.Get(url)
+	if ok {
+		locationData := LocationStructure{}
+		err := json.Unmarshal(val, &locationData)
+		if err != nil {
+			return LocationStructure{}, err
+		}
+		return locationData, nil
+	}
 	res, err := http.Get(url)
 	if err != nil {
 		return LocationStructure{}, err
@@ -50,67 +69,8 @@ func getLocationData(url string) (LocationStructure, error) {
 	if err != nil {
 		return LocationStructure{}, err
 	}
+	c.Add(url, body)
 	return *responseData, nil
-}
-
-func DisplayBackwardLocations() error {
-	var cachedData []byte
-	if responseData != nil {
-		if responseData.PreviousUrl == nil {
-			fmt.Println("Previous url doesn't exist")
-		} else {
-			url := *responseData.PreviousUrl
-			fmt.Printf("Previous Url is %s\n", url)
-			cd, ok := c.Get(url)
-			if ok {
-				fmt.Printf("Reading from cache data")
-				fmt.Printf("%s\n", cd)
-			} else {
-				locationData, err := getLocationData(url)
-				if err != nil {
-					return err
-				}
-				data := addCachedData(url, locationData, cachedData)
-				displayCachedData(data)
-				return nil
-			}
-		}
-	} else {
-		err := fmt.Errorf("no location data, pls run map command to get locations")
-		fmt.Println(err)
-	}
-	return nil
-}
-
-func DisplayLocations() error {
-	// if cache has already data, check for the url and display from cache
-	var cachedData []byte
-	if responseData != nil {
-		nextUrl := *responseData.NextUrl
-		cd, ok := c.Get(nextUrl)
-		if ok {
-			fmt.Printf("Reading from cache data")
-			fmt.Printf("%s\n", cd)
-		} else {
-			locationData, err := getLocationData(nextUrl)
-			if err != nil {
-				return err
-			}
-			data := addCachedData(nextUrl, locationData, cachedData)
-			displayCachedData(data)
-			return nil
-		}
-	} else {
-		locationData, err := getLocationData(LOCATION)
-		if err != nil {
-			return err
-		}
-
-		data := addCachedData(LOCATION, locationData, cachedData)
-		displayCachedData(data)
-		return nil
-	}
-	return nil
 }
 
 func addCachedData(url string, locationData LocationStructure, data []byte) []byte {
