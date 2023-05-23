@@ -1,51 +1,67 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
 
 type config struct {
-	nextUrl *string
-	prevUrl *string
+	nextUrl      *string
+	prevUrl      *string
+	locationArea *string
 }
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(cfg *config, optional string) error
 }
 
 var cliCommands map[string]cliCommand
 
-func startRepl(cfg *config) {
+func startRepl(cfg *config, optional string) {
 	cli := "pokedex >"
 	var command string = ""
 	cliCommands = updateCli()
 	for {
 		fmt.Printf("%s", cli)
-		_, _ = fmt.Scanln(&command)
-		switch command {
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		command = scanner.Text()
+		commands := strings.Split(command, " ")
+		fmt.Println("Split strings are ", commands)
+		switch commands[0] {
 		case "help":
-			err := cliCommands["help"].callback(cfg)
+			err := cliCommands["help"].callback(cfg, optional)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 		case "exit":
-			err := cliCommands["exit"].callback(cfg)
+			err := cliCommands["exit"].callback(cfg, optional)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			return
 		case "map":
-			err := cliCommands["map"].callback(cfg)
+			err := cliCommands["map"].callback(cfg, optional)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 		case "mapb":
-			err := cliCommands["mapb"].callback(cfg)
+			err := cliCommands["mapb"].callback(cfg, optional)
 			if err != nil {
 				fmt.Println(err)
+				return
+			}
+		case "explore":
+			area := commands[1]
+			err := cliCommands["explore"].callback(cfg, area)
+			if err != nil {
 				return
 			}
 		default:
@@ -75,6 +91,11 @@ func updateCli() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays the previous 20 locations",
 			callback:    displayBackwardLocations,
+		},
+		"explore": {
+			name:        "explore",
+			description: "List of Pokemon in a given area",
+			callback:    displayPokemonList,
 		},
 	}
 	return data

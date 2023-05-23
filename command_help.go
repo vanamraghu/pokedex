@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, optional string) error {
 	fmt.Println("Welcome to the pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println("")
@@ -10,6 +10,7 @@ func commandHelp(cfg *config) error {
 	fmt.Printf("exit:%v\n", cliCommands["exit"].description)
 	fmt.Printf("map:%s\n", cliCommands["map"].description)
 	fmt.Printf("mapb:%s\n", cliCommands["mapb"].description)
+	fmt.Printf("explore <area-name>:%v\n", cliCommands["explore"].description)
 	fmt.Println("")
 	return nil
 }

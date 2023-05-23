@@ -5,7 +5,7 @@ import (
 	"pokeapis"
 )
 
-func displayBackwardLocations(cfg *config) error {
+func displayBackwardLocations(cfg *config, optional string) error {
 	if cfg.prevUrl == nil {
 		return fmt.Errorf("previous url doesn't exist")
 	}
@@ -22,7 +22,7 @@ func displayBackwardLocations(cfg *config) error {
 	return nil
 }
 
-func displayLocations(cfg *config) error {
+func displayLocations(cfg *config, optional string) error {
 	// if cache has already data, check for the url and display from cache
 	data, err := pokeapis.GetLocationData(cfg.nextUrl)
 	if err != nil {
