@@ -16,7 +16,7 @@ type config struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(cfg *config, optional string) error
+	callback    func(*config, string) error
 }
 
 var cliCommands map[string]cliCommand
@@ -31,7 +31,6 @@ func startRepl(cfg *config, optional string) {
 		scanner.Scan()
 		command = scanner.Text()
 		commands := strings.Split(command, " ")
-		fmt.Println("Split strings are ", commands)
 		switch commands[0] {
 		case "help":
 			err := cliCommands["help"].callback(cfg, optional)
@@ -61,6 +60,12 @@ func startRepl(cfg *config, optional string) {
 		case "explore":
 			area := commands[1]
 			err := cliCommands["explore"].callback(cfg, area)
+			if err != nil {
+				return
+			}
+		case "catch":
+			pokemonName := commands[1]
+			err := cliCommands["catch"].callback(cfg, pokemonName)
 			if err != nil {
 				return
 			}
@@ -96,6 +101,11 @@ func updateCli() map[string]cliCommand {
 			name:        "explore",
 			description: "List of Pokemon in a given area",
 			callback:    displayPokemonList,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Catching some pokemon",
+			callback:    catchPokemon,
 		},
 	}
 	return data
