@@ -33,8 +33,6 @@ func (c *Cache) Get(key string) ([]byte, bool) {
 	value, ok := c.CacheData[key]
 	if ok {
 		fmt.Println("Reading from cache data")
-	} else {
-		fmt.Println("Request from api")
 	}
 	return value.val, ok
 }

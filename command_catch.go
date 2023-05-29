@@ -11,6 +11,6 @@ func catchPokemon(cfg *config, optional string) error {
 		fmt.Println("Error is ", err)
 		return err
 	}
-	fmt.Println("Printing the base experience ", exp.BaseExperience)
+	fmt.Println(exp)
 	return nil
 }
