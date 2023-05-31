@@ -9,13 +9,35 @@ import (
 )
 
 type Experience struct {
-	BaseExperience int    `json:"base_experience"`
-	Name           string `json:"name"`
+	BaseExperience int           `json:"base_experience"`
+	Name           string        `json:"name"`
+	Height         int           `json:"height"`
+	Weight         int           `json:"weight"`
+	Types          []PokeMonType `json:"types"`
+	Stats          []PokeStats   `json:"stats"`
 }
 
 type PokeMon struct {
 	Experience int
 	PokeName   string
+}
+
+type PokeMonType struct {
+	Slot  int      `json:"slot"`
+	PType PokeType `json:"type"`
+}
+
+type PokeType struct {
+	Name string `json:"name"`
+}
+
+type PokeStats struct {
+	BaseStat   int  `json:"base_stat"`
+	SecondStat Stat `json:"stat"`
+}
+
+type Stat struct {
+	StatName string `json:"name"`
 }
 
 var exp *Experience
@@ -27,9 +49,10 @@ func PokemonCatchDetails(pokemonName string) (string, error) {
 	pokeUrl := baseURL + "/pokemon/" + pokemonName
 	fmt.Printf("Throwing a Pokeball at %s\n", pokemonName)
 	// Find whether key is present
-	val, ok := c.Get(pokemonName)
+	_, ok := c.Get(pokemonName)
 	if ok {
-		return string(val), nil
+		status = fmt.Sprintf("%s was caught!\n", exp.Name)
+		return status, nil
 	}
 
 	// Use http get to the response
@@ -57,7 +80,7 @@ func PokemonCatchDetails(pokemonName string) (string, error) {
 	actualExperience := exp.BaseExperience
 	if randValue < actualExperience {
 		status = fmt.Sprintf("%s was caught!\n", exp.Name)
-		c.Add(exp.Name, []byte(status))
+		c.Add(exp.Name, data)
 	} else {
 		status = fmt.Sprintf("%s escaped!\n", exp.Name)
 	}

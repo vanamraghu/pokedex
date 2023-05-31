@@ -12,6 +12,7 @@ func commandHelp(cfg *config, optional string) error {
 	fmt.Printf("mapb:%s\n", cliCommands["mapb"].description)
 	fmt.Printf("explore <area-name>:%v\n", cliCommands["explore"].description)
 	fmt.Printf("catch <pokemon-name>: %s\n", cliCommands["catch"].description)
+	fmt.Printf("inspect <pokemon-name>: %s\n", cliCommands["inspect"].description)
 	fmt.Println("")
 	return nil
 }
