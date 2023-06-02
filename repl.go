@@ -75,6 +75,11 @@ func startRepl(cfg *config, optional string) {
 			if err != nil {
 				return
 			}
+		case "pokedex":
+			err := cliCommands["pokedex"].callback(cfg, optional)
+			if err != nil {
+				return
+			}
 		default:
 			fmt.Println("Please provide help or exit to find usage")
 		}
@@ -117,6 +122,11 @@ func updateCli() map[string]cliCommand {
 			name:        "inspect",
 			description: "Allow players to see details about a Pokemon",
 			callback:    displayInspectStats,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "Print list of all the names of the Pokemon user has caught",
+			callback:    displayCaughtPokemon,
 		},
 	}
 	return data

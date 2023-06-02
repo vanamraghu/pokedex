@@ -40,6 +40,8 @@ type Stat struct {
 	StatName string `json:"name"`
 }
 
+var ListOfCaughtPokeMon []string
+
 var exp *Experience
 
 const EXPERIENCE = 300
@@ -80,9 +82,15 @@ func PokemonCatchDetails(pokemonName string) (string, error) {
 	actualExperience := exp.BaseExperience
 	if randValue < actualExperience {
 		status = fmt.Sprintf("%s was caught!\n", exp.Name)
+		fmt.Println("You may now inspect it with the inspect command.")
 		c.Add(exp.Name, data)
+		ListOfCaughtPokeMon = append(ListOfCaughtPokeMon, exp.Name)
 	} else {
 		status = fmt.Sprintf("%s escaped!\n", exp.Name)
 	}
 	return status, nil
+}
+
+func CaughtPokeMonList() ([]string, error) {
+	return ListOfCaughtPokeMon, nil
 }
